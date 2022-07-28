@@ -2,33 +2,26 @@ package controller
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/segmentio/kafka-go"
 	"receiver/internal/entities"
+	"receiver/internal/repository"
 )
 
 type Controller struct {
-	connection *kafka.Conn
+	repository repository.IRepository
 }
 
-func NewController(connection *kafka.Conn) *Controller {
-	return &Controller{connection: connection}
+func NewController(repository repository.IRepository) *Controller {
+	return &Controller{repository: repository}
 }
 
-func (c *Controller) Answer(_ context.Context, message entities.Message) error {
+func (c *Controller) Answer(ctx context.Context, message entities.Message) error {
 	answeredMessage := entities.AnsweredMessage{
 		Id:      message.Id,
 		Message: message.Message,
 		Answer:  "Answer",
 	}
 
-	bytesMessage, err := json.Marshal(answeredMessage)
-	if err != nil {
-		return err
-	}
-
-	kafkaMessage := kafka.Message{Value: bytesMessage}
-	if _, err = c.connection.WriteMessages(kafkaMessage); err != nil {
+	if err := c.repository.WriteAnswer(ctx, answeredMessage); err != nil {
 		return err
 	}
 

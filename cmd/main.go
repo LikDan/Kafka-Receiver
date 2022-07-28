@@ -1,27 +1,20 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"github.com/segmentio/kafka-go"
-	"log"
 	"receiver/internal/controller"
+	"receiver/internal/repository"
 )
 
 func main() {
-	conf := kafka.ReaderConfig{
-		Brokers:  []string{"localhost:9092"},
-		Topic:    "user-messages",
-		MaxBytes: 10,
+	w := &kafka.Writer{
+		Addr:     kafka.TCP("localhost:9092"),
+		Topic:    "answer-messages",
+		Balancer: &kafka.LeastBytes{},
 	}
 
-	fmt.Println(conf)
-
-	conn, err := kafka.DialLeader(context.Background(), "tcp", "localhost:9092", "answer-messages", 0)
-	if err != nil {
-		log.Fatal("failed to dial leader:", err)
-	}
-
-	ctrl := controller.NewController(conn)
+	repo := repository.NewRepository(w)
+	ctrl := controller.NewController(repo)
 	fmt.Println(ctrl)
 }
