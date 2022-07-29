@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/segmentio/kafka-go"
 	"receiver/internal/controller"
-	"receiver/internal/repository"
+	"receiver/internal/provider"
 )
 
 func main() {
@@ -14,7 +14,15 @@ func main() {
 		Balancer: &kafka.LeastBytes{},
 	}
 
-	repo := repository.NewRepository(w)
+	conf := kafka.ReaderConfig{
+		Brokers:  []string{"localhost:9092"},
+		Topic:    "user-messages",
+		MaxBytes: 10,
+	}
+
+	r := kafka.NewReader(conf)
+
+	repo := provider.NewProvider(w, r)
 	ctrl := controller.NewController(repo)
 	fmt.Println(ctrl)
 }
