@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"github.com/segmentio/kafka-go"
 	"receiver/internal/controller"
+	"receiver/internal/handler"
 	"receiver/internal/provider"
 )
 
@@ -24,5 +24,6 @@ func main() {
 
 	repo := provider.NewProvider(w, r)
 	ctrl := controller.NewController(repo)
-	fmt.Println(ctrl)
+	h := handler.NewHandler(ctrl)
+	h.Proceed()
 }
