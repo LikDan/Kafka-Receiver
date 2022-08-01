@@ -2,7 +2,7 @@ package handler
 
 import (
 	"context"
-	"fmt"
+	"log"
 	"receiver/internal/controller"
 	"receiver/internal/entities"
 )
@@ -22,7 +22,7 @@ func (h *Handler) receive(c chan entities.Message) {
 	for {
 		message, err := h.controller.Read(context.Background())
 		if err != nil {
-			fmt.Println("Read error: ", err)
+			log.Println("Read error: ", err)
 			continue
 		}
 
@@ -36,11 +36,11 @@ func (h *Handler) proceed() {
 	go func() {
 		for {
 			message := <-messageChan
+			log.Println("received message: ", message)
 
-			fmt.Println("received message: ", message)
-
-			if err := h.controller.Answer(context.Background(), message, "Answer"); err != nil {
-				fmt.Println("Answer error: ", err)
+			ctx := context.Background()
+			if err := h.controller.Answer(ctx, message, "Answer"); err != nil {
+				log.Println("Answer error: ", err)
 				continue
 			}
 		}
