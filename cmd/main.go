@@ -24,7 +24,6 @@ func main() {
 
 	repo := provider.NewProvider(w, r)
 	ctrl := controller.NewController(repo)
-	handler.NewHandler(ctrl)
-
-	select {}
+	h := handler.NewHandler(ctrl)
+	h.Proceed()
 }

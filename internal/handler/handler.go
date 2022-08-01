@@ -12,10 +12,7 @@ type Handler struct {
 }
 
 func NewHandler(controller controller.IController) *Handler {
-	handler := Handler{controller: controller}
-	go handler.proceed()
-
-	return &handler
+	return &Handler{controller: controller}
 }
 
 func (h *Handler) receive(c chan entities.Message) {
@@ -30,7 +27,7 @@ func (h *Handler) receive(c chan entities.Message) {
 	}
 }
 
-func (h *Handler) proceed() {
+func (h *Handler) Proceed() {
 	messageChan := make(chan entities.Message)
 
 	go func() {
